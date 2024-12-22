@@ -53,43 +53,39 @@ function createIframe(url) {
 
   const title = document.createElement("span"); // Create the title element
 
-  // Function to fetch the title from the URL
-  const getTitleFromUrl = async (url) => {
-    try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "text/html",
-        },
-      });
+  // Function to fetch the title from the URL using .then()
+  const getTitleFromUrl = (url) => {
+    return fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "text/html",
+      },
+    })
+      .then((response) => response.text()) // Parse the response as text
+      .then((html) => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        // Try to find the title in the <title> tag
+        const pageTitle = doc.querySelector("title")?.textContent;
 
-      // If the request is successful, try to parse the HTML
-      const html = await response.text();
-
-      // Create a temporary DOM element to parse the HTML
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = html;
-
-      // Try to find the title in the <title> tag
-      const pageTitle = tempDiv.querySelector("title")?.textContent;
-
-      // If a title is found, truncate it if longer than 10 characters
-      if (pageTitle) {
-        if (pageTitle.length > 10) {
-          title.textContent = pageTitle.substring(0, 10) + "..."; // Truncate to 10 characters and add '...'
+        if (pageTitle) {
+          // If a title is found, truncate it if longer than 10 characters
+          if (pageTitle.length > 10) {
+            title.textContent = pageTitle.substring(0, 10) + "..."; // Truncate to 10 characters and add '...'
+          } else {
+            title.textContent = pageTitle; // Use full title if it’s within 10 characters
+          }
         } else {
-          title.textContent = pageTitle; // Use full title if it’s within 10 characters
+          title.textContent = url; // Fallback to URL if no title found
         }
-      } else {
-        title.textContent = url; // Fallback to URL if no title found
-      }
-    } catch (error) {
-      // If an error occurs (e.g., CORS issues, network failure), fallback to URL
-      title.textContent = url;
-    }
+      })
+      .catch((error) => {
+        // If an error occurs (e.g., CORS issues, network failure), fallback to URL
+        title.textContent = url;
+      });
   };
 
-  // Fetch and set the title asynchronously
+  // Fetch and set the title using .then() instead of async/await
   getTitleFromUrl(url);
 
   title.addEventListener("click", () => {
@@ -208,6 +204,7 @@ function createIframe(url) {
 
   saveUrls(); // Save the updated list of URLs
 }
+
 
 
 
