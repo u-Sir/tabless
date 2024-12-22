@@ -181,7 +181,7 @@ function createIframe(url) {
   const editButton = document.createElement("button");
   editButton.textContent = "\u270F";
   editButton.addEventListener("click", () => {
-    const newUrl = prompt("Edit URL:", url);
+    const newUrl = prompt("URL:", url);
     if (newUrl) {
       iframe.src = newUrl;
       getTitleFromUrl(newUrl);  // Fetch the new title when the URL is edited
@@ -259,7 +259,7 @@ saveSettingsButton.addEventListener("click", () => {
     // Collapse the settings panel
     settingsContainer.style.display = "none";
   } else {
-    alert("Please enter valid dimensions.");
+    alert("×");
   }
 });
 
@@ -272,7 +272,7 @@ editAllButton.addEventListener("click", async () => {
     const formattedUrls = currentUrls.join(";");  // Join URLs with semicolon and space
 
     // Create a prompt to allow the user to edit the URLs, and show current URLs as a default value
-    const newUrls = prompt("Edit the URLs (separate by semicolon):", formattedUrls);
+    const newUrls = prompt("URLs: example.com;https://www.example2.com", formattedUrls);
 
     // If the user entered some new URLs, process them
     if (newUrls !== null) {
