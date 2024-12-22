@@ -8,3 +8,5 @@
 Icon from: https://www.svgrepo.com/
 
 iframe info generate by: https://iframegenerator.top/
+
+Design Reference: https://newsnow.busiyi.world/
