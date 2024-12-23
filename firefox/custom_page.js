@@ -95,7 +95,6 @@ function createIframe(url) {
           return; // URL not found in storage, exit early
         }
 
-        console.log("URL found at index:", index);
 
         // Create the index selector dropdown
         const selector = document.createElement("select");
@@ -138,7 +137,6 @@ function createIframe(url) {
         // Add an event listener for when the user selects an index
         selector.addEventListener("change", () => {
           const selectedIndex = parseInt(selector.value);  // Get selected index
-          console.log("Selected index:", selectedIndex);
 
           // Swap the URL at the current index with the selected index
           const temp = urls[index];
