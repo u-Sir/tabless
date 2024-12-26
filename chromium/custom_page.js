@@ -28,13 +28,14 @@ document.addEventListener("DOMContentLoaded", () => {
 // Save URLs to storage
 function saveUrls() {
   const urls = Array.from(iframeContainer.querySelectorAll(".iframe-wrapper iframe")).map(
-    (iframe) => iframe.src
+    (iframe) => iframe.getAttribute("src")
   );
   chrome.storage.local.set({ iframeUrls: urls });
 }
 
 function createIframe(url) {
-  chrome.storage.local.get('iframeSettings', (data) => {
+  chrome.storage.local.get(['iframeSettings', 'size'], (data) => {
+
     const iframeWrapper = document.createElement("div");
     iframeWrapper.className = "iframe-wrapper";
 
@@ -45,10 +46,9 @@ function createIframe(url) {
     const title = document.createElement("span"); // Create the title element
     title.style.paddingLeft = "0.5em"; // Add some left margin for spacing
 
-
-    iframeWrapper.style.width = `${(data.iframeSettings && data.iframeSettings.width) || 375}px`;
-    iframeWrapper.style.height = `${(data.iframeSettings && data.iframeSettings.height) || 667}px`;
-    title.style.maxWidth = `${(data.iframeSettings && data.iframeSettings.width) || 375}px`;
+    iframeWrapper.style.width = `${(data.size && data.size[url] && data.size[url].width) || (data.iframeSettings && data.iframeSettings.width) || 375}px`;
+    iframeWrapper.style.height = `${(data.size && data.size[url] && data.size[url].height) || (data.iframeSettings && data.iframeSettings.height) || 667}px`;
+    title.style.maxWidth = `${(data.size && data.size[url] && data.size[url].width) || (data.iframeSettings && data.iframeSettings.width) || 375}px`;
     title.style.overflow = "hidden";
     title.style.textOverflow = "ellipsis";
     title.style.whiteSpace = "nowrap";
@@ -162,12 +162,15 @@ function createIframe(url) {
 
 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
 
-<g id="SVGRepo_iconCarrier"> <title>close [#1511]</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-419.000000, -240.000000)" fill="#cecece"> <g id="icons" transform="translate(56.000000, 160.000000)"> <polygon id="close-[#1511]" points="375.0183 90 384 98.554 382.48065 100 373.5 91.446 364.5183 100 363 98.554 371.98065 90 363 81.446 364.5183 80 373.5 88.554 382.48065 80 384 81.446"> </polygon> </g> </g> </g> </g>
+<g id="SVGRepo_iconCarrier"> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-419.000000, -240.000000)" fill="#cecece"> <g id="icons" transform="translate(56.000000, 160.000000)"> <polygon id="close-[#1511]" points="375.0183 90 384 98.554 382.48065 100 373.5 91.446 364.5183 100 363 98.554 371.98065 90 363 81.446 364.5183 80 373.5 88.554 382.48065 80 384 81.446"> </polygon> </g> </g> </g> </g>
 
 </svg>
 `;
 
     removeButton.addEventListener("click", () => {
+      if (data.size && data.size[url]) {
+        delete data.size[url]; // Remove the size settings for the current URL
+      }
       iframeWrapper.remove();
       saveUrls();
     });
@@ -180,7 +183,7 @@ function createIframe(url) {
 
 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
 
-<g id="SVGRepo_iconCarrier"> <title>arrow_repeat [#236]</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-302.000000, -7080.000000)" fill="#cecece"> <g id="icons" transform="translate(56.000000, 160.000000)"> <path d="M260,6930 C260,6933 257.308,6936 254,6936 C250.692,6936 248,6933.308 248,6930 C248,6926.692 250.692,6924 254,6924 L254,6926 L259,6923 L254,6920 L254,6922 C249.582,6922 246,6925.582 246,6930 C246,6934.418 249.582,6938 254,6938 C258.418,6938 262,6935 262,6930 L260,6930 Z" id="arrow_repeat-[#236]"> </path> </g> </g> </g> </g>
+<g id="SVGRepo_iconCarrier"> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-302.000000, -7080.000000)" fill="#cecece"> <g id="icons" transform="translate(56.000000, 160.000000)"> <path d="M260,6930 C260,6933 257.308,6936 254,6936 C250.692,6936 248,6933.308 248,6930 C248,6926.692 250.692,6924 254,6924 L254,6926 L259,6923 L254,6920 L254,6922 C249.582,6922 246,6925.582 246,6930 C246,6934.418 249.582,6938 254,6938 C258.418,6938 262,6935 262,6930 L260,6930 Z" id="arrow_repeat-[#236]"> </path> </g> </g> </g> </g>
 
 </svg>
 `;
@@ -197,7 +200,7 @@ function createIframe(url) {
 
 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
 
-<g id="SVGRepo_iconCarrier"> <title>pen [#1319]</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-180.000000, -2319.000000)" fill="#cecece"> <g id="icons" transform="translate(56.000000, 160.000000)"> <path d="M138.229706,2163.463 L139.648153,2161.977 L141.070621,2163.466 L139.651169,2164.952 L138.229706,2163.463 Z M127.920583,2177.236 L126.498115,2175.747 L136.808243,2164.952 L138.229706,2166.44 L127.920583,2177.236 Z M139.821061,2159 L124,2175.747 L124,2179 L127.920583,2179 L144,2162.859 L139.821061,2159 Z" id="pen-[#1319]"> </path> </g> </g> </g> </g>
+<g id="SVGRepo_iconCarrier"> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-180.000000, -2319.000000)" fill="#cecece"> <g id="icons" transform="translate(56.000000, 160.000000)"> <path d="M138.229706,2163.463 L139.648153,2161.977 L141.070621,2163.466 L139.651169,2164.952 L138.229706,2163.463 Z M127.920583,2177.236 L126.498115,2175.747 L136.808243,2164.952 L138.229706,2166.44 L127.920583,2177.236 Z M139.821061,2159 L124,2175.747 L124,2179 L127.920583,2179 L144,2162.859 L139.821061,2159 Z" id="pen-[#1319]"> </path> </g> </g> </g> </g>
 
 </svg>
 `;
@@ -211,13 +214,50 @@ function createIframe(url) {
       }
     });
 
+    const resizeButton = document.createElement("button");
+    resizeButton.innerHTML = `
+    <svg width="14px" height="14px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-260.000000, -4359.000000)" fill="#cecece"> <g id="icons" transform="translate(56.000000, 160.000000)"> <path d="M210.428608,4212.57139 C210.823577,4212.96636 210.823577,4213.60579 210.428608,4213.99975 C210.033638,4214.39472 209.394212,4214.39472 209.000253,4213.99975 C208.605283,4213.60579 208.605283,4212.96636 209.000253,4212.57139 C209.394212,4212.17642 210.033638,4212.17642 210.428608,4212.57139 L210.428608,4212.57139 Z M219.713925,4206.14278 L218.28557,4204.71443 L216.857215,4206.14278 L218.28557,4207.57114 L216.857215,4208.99949 L215.42886,4207.57114 L214.000505,4208.99949 L215.42886,4210.42886 L214.000505,4211.85722 L212.57114,4210.42886 L211.142785,4211.85722 L212.57114,4213.28557 L209.71443,4216.14329 L206.85671,4213.28557 L218.28557,4201.85671 L221.14329,4204.71443 L219.713925,4206.14278 Z M222.571645,4203.28608 L219.713925,4200.42835 L218.28557,4199 L216.857215,4200.42835 L205.428355,4211.85722 L204,4213.28557 L205.428355,4214.71392 L208.286075,4217.57165 L209.71443,4219 L211.142785,4217.57165 L214.000505,4214.71392 L215.42886,4213.28557 L216.857215,4211.85722 L218.28557,4210.42886 L219.713925,4208.99949 L221.14329,4207.57114 L222.571645,4206.14278 L224,4204.71443 L222.571645,4203.28608 Z" id="ruler#4-[#865]"> </path> </g> </g> </g> </g></svg>
+`;
+
+    resizeButton.addEventListener("click", () => {
+
+      // Show prompt with default size in "width:height" format
+      const newSize = prompt("↔x↕", `${iframeWrapper.style.width.replace("px", "")}x${iframeWrapper.style.height.replace("px", "")}`);
+      if (newSize) {
+        const [width, height] = newSize.split("x").map(value => parseInt(value.trim(), 10)); // Split and parse
+
+        if (!isNaN(width) && !isNaN(height)) { // Validate the parsed values
+          data.size = data.size || {};
+          data.size[url] = { width, height }; // Update the iframeSettings.url directly
+
+          chrome.storage.local.set({ size: data.size }, () => {
+            window.location.reload();
+          });
+        } else {
+          alert("Invalid input. Please enter the size in the format 'widthxheight' (e.g., '600x800').");
+        }
+      }
+    });
+
+    const signInButton = document.createElement("button");
+    signInButton.innerHTML = `
+<svg width="14px" height="14px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>profile [#1335]</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-420.000000, -2159.000000)" fill="#cecece"> <g id="icons" transform="translate(56.000000, 160.000000)"> <path d="M374,2009 C371.794,2009 370,2007.206 370,2005 C370,2002.794 371.794,2001 374,2001 C376.206,2001 378,2002.794 378,2005 C378,2007.206 376.206,2009 374,2009 M377.758,2009.673 C379.124,2008.574 380,2006.89 380,2005 C380,2001.686 377.314,1999 374,1999 C370.686,1999 368,2001.686 368,2005 C368,2006.89 368.876,2008.574 370.242,2009.673 C366.583,2011.048 364,2014.445 364,2019 L366,2019 C366,2014 369.589,2011 374,2011 C378.411,2011 382,2014 382,2019 L384,2019 C384,2014.445 381.417,2011.048 377.758,2009.673" id="profile-[#1335]"> </path> </g> </g> </g> </g></svg>`;
+
+    signInButton.addEventListener("click", () => {
+      window.open(url, "_blank"); // Opens the URL in a new tab
+    });
+
+
+
     // Check if URL contains 'douyin' and set min-width accordingly
     if (url.includes('douyin')) {
       iframeWrapper.style.minWidth = '628px';
     }
 
     titleBar.appendChild(title);
+    titleBar.appendChild(resizeButton);
     titleBar.appendChild(editButton);
+    titleBar.appendChild(signInButton);
     titleBar.appendChild(refreshButton);
     titleBar.appendChild(removeButton);
 
@@ -225,8 +265,9 @@ function createIframe(url) {
     const iframe = document.createElement("iframe");
     iframe.src = url;
     iframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads allow-presentation allow-pointer-lock allow-storage-access-by-user-activation allow-orientation-lock"
-    iframe.style.width = `${iframeWidth}px`;
-    iframe.style.height = `${iframeHeight}px`;
+    iframe.style.width = `${(data.size && data.size[url] && data.size[url].width) || iframeWidth}px`;
+    iframe.style.height = `${(data.size && data.size[url] && data.size[url].height) || iframeHeight}px`;
+
 
     // Check if URL contains 'douyin' and set min-width accordingly
     if (url.includes('douyin')) {
@@ -260,7 +301,6 @@ addButton.addEventListener("click", () => {
         // If not, prepend https://
         url = "https://" + url;
       }
-
       createIframe(url); // Create iframe for each valid URL
     });
   }
@@ -313,6 +353,7 @@ editAllButton.addEventListener("click", async () => {
 
       // Save the updated URLs back to chrome.storage.local
       chrome.storage.local.set({ 'iframeUrls': updatedUrls }, () => {
+
         // alert("URLs updated successfully!");
         // Reload the page to apply the changes immediately
         window.location.reload();

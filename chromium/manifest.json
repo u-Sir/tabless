@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Hall of iFrame · 页问",
-    "version": "1.3",
+    "version": "1.4",
     "permissions": [
         "declarativeNetRequest",
         "storage"
