@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "Hall of iFrame · 页问",
-    "version": "1.4",
+    "name": "Tabless",
+    "version": "1.5",
     "permissions": [
         "declarativeNetRequest",
         "storage"

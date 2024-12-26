@@ -2,24 +2,33 @@ const iframeContainer = document.getElementById("iframeContainer");
 const addButton = document.getElementById("addButton");
 const settingsButton = document.getElementById("settingsButton");
 const editAllButton = document.getElementById("editAllButton");
+const pcUAButton = document.getElementById("pcUAButton");
 const settingsContainer = document.getElementById("settingsContainer");
 const iframeWidthInput = document.getElementById("iframeWidth");
 const iframeHeightInput = document.getElementById("iframeHeight");
+const iframeGapInput = document.getElementById("iframeGap");
 const saveSettingsButton = document.getElementById("saveSettingsButton");
 
 let iframeWidth = 375; // Default width
 let iframeHeight = 667; // Default height
+let iframeGap = 10; // Default gap
 
 // Load settings and URLs when the page opens
 document.addEventListener("DOMContentLoaded", () => {
   chrome.storage.local.get(["iframeUrls", "iframeSettings"], (data) => {
     const urls = data.iframeUrls || [];
-    const settings = data.iframeSettings || { width: 375, height: 667 };
+    const settings = data.iframeSettings || { width: 375, height: 667, gap: 10 };
 
     iframeWidth = settings.width;
     iframeHeight = settings.height;
+    iframeGap = settings.gap;
+
     iframeWidthInput.value = iframeWidth;
     iframeHeightInput.value = iframeHeight;
+    iframeGapInput.value = iframeGap;
+
+    const iframeContainer = document.querySelector('#iframeContainer');
+    iframeContainer.style.gap = `${iframeGap}px`; // Set the new gap
 
     urls.forEach((url) => createIframe(url));
   });
@@ -316,15 +325,18 @@ settingsButton.addEventListener("click", () => {
 saveSettingsButton.addEventListener("click", () => {
   const newWidth = parseInt(iframeWidthInput.value, 10);
   const newHeight = parseInt(iframeHeightInput.value, 10);
+  const newGap = parseInt(iframeGapInput.value, 10);
 
-  if (newWidth > 0 && newHeight > 0) {
+  if (newWidth > 0 && newHeight > 0 && newGap > 0) {
     iframeWidth = newWidth;
     iframeHeight = newHeight;
+    iframeGap = newGap;
 
     chrome.storage.local.set({
       iframeSettings: {
         width: iframeWidth,
         height: iframeHeight,
+        gap: iframeGap
       },
     }, () => {
       window.location.reload();
@@ -341,20 +353,27 @@ editAllButton.addEventListener("click", async () => {
   chrome.storage.local.get('iframeUrls', (data) => {
     // If URLs exist, format them as a semicolon-separated list
     const currentUrls = data.iframeUrls || [];
-    const formattedUrls = currentUrls.join(";");  // Join URLs with semicolon and space
+    const formattedUrls = currentUrls.join(";");  // Join URLs with semicolon
 
     // Create a prompt to allow the user to edit the URLs, and show current URLs as a default value
     const newUrls = prompt("URLs: example.com;https://www.example2.com", formattedUrls);
 
     // If the user entered some new URLs, process them
     if (newUrls !== null) {
-      // Split by semicolon and remove any leading/trailing spaces from each URL
-      const updatedUrls = newUrls.split(";").map(url => url.trim());
+      // Split by semicolon, trim spaces, and validate URLs
+      const updatedUrls = newUrls.split(";")
+        .map(url => url.trim())       // Trim each URL
+        .filter(url => url !== "")    // Remove empty strings
+        .map(url => {
+          // Prepend https:// if the URL doesn't start with http:// or https://
+          if (!/^https?:\/\//i.test(url)) {
+            url = `https://${url}`;
+          }
+          return url;
+        });
 
       // Save the updated URLs back to chrome.storage.local
       chrome.storage.local.set({ 'iframeUrls': updatedUrls }, () => {
-
-        // alert("URLs updated successfully!");
         // Reload the page to apply the changes immediately
         window.location.reload();
       });
@@ -362,3 +381,76 @@ editAllButton.addEventListener("click", async () => {
   });
 });
 
+
+
+pcUAButton.addEventListener("click", () => {
+  chrome.declarativeNetRequest.getDynamicRules((rules) => {
+    const pcUAValue =
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36";
+    let maxRuleId = rules.length > 0 ? Math.max(...rules.map((rule) => rule.id)) : 0;
+
+    // Filter existing rules that modify User-Agent to PC UA
+    const uaRules = rules.filter((rule) =>
+      rule.action?.requestHeaders?.some(
+        (header) => header.header === "User-Agent" && header.value === pcUAValue
+      )
+    );
+
+    // Extract existing URL filters
+    const urlFilters = uaRules.map((rule) => rule.condition.urlFilter).join(";");
+
+    // Show prompt with current URLs
+    const input = prompt(
+      "PC User-Agent URLs: \n*.example.com;https://www.example2.com/path/*",
+      urlFilters || ""
+    );
+
+    if (input !== null) {
+      const newUrls = input
+        .split(";")
+        .map((url) => url.trim())
+        .filter(Boolean); // Remove empty or invalid entries
+
+      const existingFilters = new Set(uaRules.map((rule) => rule.condition.urlFilter));
+
+      // Determine rules to add and remove
+      const urlsToRemove = Array.from(existingFilters).filter((url) => !newUrls.includes(url));
+      const urlsToAdd = newUrls.filter((url) => !existingFilters.has(url));
+
+      const rulesToRemove = uaRules
+        .filter((rule) => urlsToRemove.includes(rule.condition.urlFilter))
+        .map((rule) => rule.id);
+
+      const newRules = urlsToAdd.map((url) => ({
+        id: ++maxRuleId,
+        priority: 3,
+        action: {
+          type: "modifyHeaders",
+          requestHeaders: [
+            {
+              header: "User-Agent",
+              operation: "set",
+              value: pcUAValue,
+            },
+          ],
+        },
+        condition: {
+          urlFilter: url,
+          resourceTypes: ["sub_frame"],
+        },
+      }));
+
+      // Update dynamic rules
+      chrome.declarativeNetRequest.updateDynamicRules(
+        {
+          addRules: newRules,
+          removeRuleIds: rulesToRemove,
+        },
+        () => {
+          console.log("Rules updated:", { added: newRules, removed: rulesToRemove });
+          window.location.reload();
+        }
+      );
+    }
+  });
+});
