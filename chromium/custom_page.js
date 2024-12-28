@@ -2,22 +2,31 @@ const iframeContainer = document.getElementById("iframeContainer");
 const addButton = document.getElementById("addButton");
 const settingsButton = document.getElementById("settingsButton");
 const editAllButton = document.getElementById("editAllButton");
+const deleteAllButton = document.getElementById("deleteAllButton");
 const pcUAButton = document.getElementById("pcUAButton");
+const rotateButton = document.getElementById("rotateButton");
 const settingsContainer = document.getElementById("settingsContainer");
+const editContainer = document.getElementById("editContainer");
 const iframeWidthInput = document.getElementById("iframeWidth");
 const iframeHeightInput = document.getElementById("iframeHeight");
+const oneUrlsInput = document.getElementById("oneUrls");
+const twoUrlsInput = document.getElementById("twoUrls");
+const threeUrlsInput = document.getElementById("threeUrls");
+const fourUrlsInput = document.getElementById("fourUrls");
 const iframeGapInput = document.getElementById("iframeGap");
 const saveSettingsButton = document.getElementById("saveSettingsButton");
+const saveEditButton = document.getElementById("saveEditButton");
 
 let iframeWidth = 375; // Default width
 let iframeHeight = 667; // Default height
-let iframeGap = 10; // Default gap
+let iframeGap = 20; // Default gap
 
 // Load settings and URLs when the page opens
 document.addEventListener("DOMContentLoaded", () => {
-  chrome.storage.local.get(["iframeUrls", "iframeSettings"], (data) => {
-    const urls = data.iframeUrls || [];
-    const settings = data.iframeSettings || { width: 375, height: 667, gap: 10 };
+  chrome.storage.local.get(["iframeUrls", "iframeSettings", "group", "lastUrls"], (data) => {
+    const urls = data.lastUrls || [];
+    const group = data.group || { one: '', two: '', three: '', four: '' };
+    const settings = data.iframeSettings || { width: 375, height: 667, gap: 20 };
 
     iframeWidth = settings.width;
     iframeHeight = settings.height;
@@ -27,10 +36,51 @@ document.addEventListener("DOMContentLoaded", () => {
     iframeHeightInput.value = iframeHeight;
     iframeGapInput.value = iframeGap;
 
+    oneUrlsInput.value = group.one;
+    twoUrlsInput.value = group.two;
+    threeUrlsInput.value = group.three;
+    fourUrlsInput.value = group.four;
+
     const iframeContainer = document.querySelector('#iframeContainer');
     iframeContainer.style.gap = `${iframeGap}px`; // Set the new gap
 
-    urls.forEach((url) => createIframe(url));
+    // urls.forEach((url) => createIframe(url));
+    buttonID = ['oneButton', 'twoButton', 'threeButton', 'fourButton'];
+    // Explicit mapping of button IDs to group keys
+    const buttonToGroupMap = {
+      oneButton: 'one',
+      twoButton: 'two',
+      threeButton: 'three',
+      fourButton: 'four',
+    };
+
+    // Iterate through buttonToGroupMap
+    Object.entries(buttonToGroupMap).forEach(([buttonId, groupKey]) => {
+      const button = document.getElementById(buttonId); // Get button by ID
+      const urls = group[groupKey]; // Get URLs for the group key
+
+      const split = document.getElementById('split-end'); // Get button by ID
+      if (urls && urls.length > 0) {
+        split.style.display = '';
+        // Bind click event if group has URLs
+        function open() {
+          addIframe(urls);
+          // Add your specific click event logic here
+        }
+        button.removeEventListener('click', open);
+        button.addEventListener('click', open);
+      } else {
+        // Hide button if no URLs in the group
+        button.style.display = 'none';
+      }
+    });
+
+    if (urls.length > 0) {
+      urls.forEach((url) => createIframe(url));
+      chrome.storage.local.set({ lastUrls: [] });
+    }
+
+
   });
 });
 
@@ -43,8 +93,9 @@ function saveUrls() {
 }
 
 function createIframe(url) {
-  chrome.storage.local.get(['iframeSettings', 'size'], (data) => {
+  chrome.storage.local.get(['iframeSettings', 'size', "vertical"], (data) => {
 
+    const vertical = data.vertical ?? true;
     const iframeWrapper = document.createElement("div");
     iframeWrapper.className = "iframe-wrapper";
 
@@ -197,8 +248,8 @@ function createIframe(url) {
 </svg>
 `;
     refreshButton.addEventListener("click", () => {
-      iframe.src = iframe.src; // Reload iframe
-      getTitleFromUrl(iframe.src);  // Fetch title again after refresh
+      iframe.src = iframe.getAttribute("src"); // Reload iframe
+      getTitleFromUrl(iframe.getAttribute("src"));  // Fetch title again after refresh
     });
 
     const editButton = document.createElement("button");
@@ -229,24 +280,34 @@ function createIframe(url) {
 `;
 
     resizeButton.addEventListener("click", () => {
-
       // Show prompt with default size in "width:height" format
-      const newSize = prompt("↔x↕", `${iframeWrapper.style.width.replace("px", "")}x${iframeWrapper.style.height.replace("px", "")}`);
+      const currentWidth = iframeWrapper.style.width.replace("px", "") || iframeWrapper.offsetWidth;
+      const currentHeight = iframeWrapper.style.height.replace("px", "") || iframeWrapper.offsetHeight;
+      const newSize = prompt("↔x↕", `${currentWidth}x${currentHeight}`);
+
       if (newSize) {
         const [width, height] = newSize.split("x").map(value => parseInt(value.trim(), 10)); // Split and parse
 
         if (!isNaN(width) && !isNaN(height)) { // Validate the parsed values
+          // Update the iframeWrapper's size directly
+          iframeWrapper.style.width = `${width}px`;
+          iframeWrapper.style.height = `${height}px`;
+          iframe.style.width = `${width}px`;
+          iframe.style.height = `${height}px`;
+
+          // Save the new size in the local storage
           data.size = data.size || {};
           data.size[url] = { width, height }; // Update the iframeSettings.url directly
 
           chrome.storage.local.set({ size: data.size }, () => {
-            window.location.reload();
+            // console.log("New iframe size saved:", { width, height });
           });
         } else {
           alert("Invalid input. Please enter the size in the format 'widthxheight' (e.g., '600x800').");
         }
       }
     });
+
 
     const signInButton = document.createElement("button");
     signInButton.innerHTML = `
@@ -286,6 +347,9 @@ function createIframe(url) {
     iframeWrapper.appendChild(iframe);
     iframeContainer.appendChild(iframeWrapper);
 
+    if (!vertical) {
+      setHorizonStyle();
+    }
     saveUrls(); // Save the updated list of URLs
 
   });
@@ -297,6 +361,10 @@ function createIframe(url) {
 // Add new iframe URLs (supporting multiple URLs separated by semicolons)
 addButton.addEventListener("click", () => {
   let urls = prompt("URLs: example.com;https://www.example2.com");
+  addIframe(urls);
+});
+
+function addIframe(urls) {
 
   if (urls) {
     // Trim leading and trailing semicolons and whitespace
@@ -313,12 +381,26 @@ addButton.addEventListener("click", () => {
       createIframe(url); // Create iframe for each valid URL
     });
   }
-});
+}
 
 // Show settings input boxes
 settingsButton.addEventListener("click", () => {
-  settingsContainer.style.display =
-    settingsContainer.style.display === "none" ? "block" : "none";
+
+
+  chrome.storage.local.get("iframeSettings", (data) => {
+    const settings = data.iframeSettings || { width: 375, height: 667, gap: 20 };
+
+    iframeWidth = settings.width;
+    iframeHeight = settings.height;
+    iframeGap = settings.gap;
+
+    iframeWidthInput.value = iframeWidth;
+    iframeHeightInput.value = iframeHeight;
+    iframeGapInput.value = iframeGap;
+
+    settingsContainer.style.display =
+      settingsContainer.style.display === "none" ? "block" : "none";
+  })
 });
 
 // Save iframe size settings
@@ -327,61 +409,153 @@ saveSettingsButton.addEventListener("click", () => {
   const newHeight = parseInt(iframeHeightInput.value, 10);
   const newGap = parseInt(iframeGapInput.value, 10);
 
+  // Validate inputs
   if (newWidth > 0 && newHeight > 0 && newGap > 0) {
-    iframeWidth = newWidth;
-    iframeHeight = newHeight;
-    iframeGap = newGap;
+    // Check if values have changed
+    const hasWidthChanged = newWidth !== iframeWidth;
+    const hasHeightChanged = newHeight !== iframeHeight;
+    const hasGapChanged = newGap !== iframeGap;
 
-    chrome.storage.local.set({
-      iframeSettings: {
-        width: iframeWidth,
-        height: iframeHeight,
-        gap: iframeGap
-      },
-    }, () => {
-      window.location.reload();
-    });
+    if (hasWidthChanged || hasHeightChanged || hasGapChanged) {
+      // Update iframe settings
+      iframeWidth = newWidth;
+      iframeHeight = newHeight;
+      iframeGap = newGap;
 
+      // Save new settings to local storage
+      chrome.storage.local.set({
+        iframeSettings: {
+          width: iframeWidth,
+          height: iframeHeight,
+          gap: iframeGap,
+        },
+      }, () => {
+        // Fetch stored iframe-specific sizes
+        chrome.storage.local.get(["size"], (data) => {
+          const sizeData = data.size || {};
+
+          // Fetch all iframe wrappers
+          const iframeWrappers = document.querySelectorAll(".iframe-wrapper");
+
+          iframeWrappers.forEach(wrapper => {
+            const iframe = wrapper.querySelector("iframe");
+
+            if (iframe) {
+              const iframeUrl = iframe.getAttribute("src");
+
+              // Check if this iframe URL has specific sizes saved
+              const iframeSize = sizeData[iframeUrl];
+
+              if (!iframeSize || !iframeSize.width || !iframeSize.height) {
+                // Update iframe and wrapper size if no specific size is saved
+                wrapper.style.width = `${iframeWidth}px`;
+                wrapper.style.height = `${iframeHeight}px`;
+                iframe.style.width = `${iframeWidth}px`;
+                iframe.style.height = `${iframeHeight}px`;
+              }
+            }
+          });
+        });
+      });
+    }
+    // Hide settings container
+    settingsContainer.style.display = "none";
   } else {
+    // Invalid inputs
     alert("×");
   }
 });
 
-// Edit all URLs settings
-editAllButton.addEventListener("click", async () => {
-  // Retrieve the current list of URLs from chrome.storage.local
-  chrome.storage.local.get('iframeUrls', (data) => {
-    // If URLs exist, format them as a semicolon-separated list
-    const currentUrls = data.iframeUrls || [];
-    const formattedUrls = currentUrls.join(";");  // Join URLs with semicolon
 
-    // Create a prompt to allow the user to edit the URLs, and show current URLs as a default value
-    const newUrls = prompt("URLs: example.com;https://www.example2.com", formattedUrls);
+// Save iframe size settings
+saveEditButton.addEventListener("click", () => {
+  const newOneUrls = oneUrlsInput.value.trim();
+  const newTwoUrls = twoUrlsInput.value.trim();
+  const newThreeUrls = threeUrlsInput.value.trim();
+  const newFourUrls = fourUrlsInput.value.trim();
 
-    // If the user entered some new URLs, process them
-    if (newUrls !== null) {
-      // Split by semicolon, trim spaces, and validate URLs
-      const updatedUrls = newUrls.split(";")
-        .map(url => url.trim())       // Trim each URL
-        .filter(url => url !== "")    // Remove empty strings
-        .map(url => {
-          // Prepend https:// if the URL doesn't start with http:// or https://
-          if (!/^https?:\/\//i.test(url)) {
-            url = `https://${url}`;
-          }
-          return url;
-        });
+  // Update URL variables
+  oneUrls = newOneUrls;
+  twoUrls = newTwoUrls;
+  threeUrls = newThreeUrls;
+  fourUrls = newFourUrls;
 
-      // Save the updated URLs back to chrome.storage.local
-      chrome.storage.local.set({ 'iframeUrls': updatedUrls }, () => {
-        // Reload the page to apply the changes immediately
-        window.location.reload();
+  // Save to local storage
+  chrome.storage.local.set({
+    group: {
+      one: oneUrls,
+      two: twoUrls,
+      three: threeUrls,
+      four: fourUrls
+    },
+  }, () => {
+    chrome.storage.local.get(["group"], (data) => {
+      const group = data.group || { one: '', two: '', three: '', four: '' };
+      const buttonID = ['oneButton', 'twoButton', 'threeButton', 'fourButton'];
+      const buttonToGroupMap = {
+        oneButton: 'one',
+        twoButton: 'two',
+        threeButton: 'three',
+        fourButton: 'four',
+      };
+
+      const split = document.getElementById('split-end');
+      const editContainer = document.getElementById("editContainer");
+      let hasUrls = false;
+
+      // Iterate through buttonToGroupMap
+      Object.entries(buttonToGroupMap).forEach(([buttonId, groupKey]) => {
+        const button = document.getElementById(buttonId);
+        const urls = group[groupKey];
+
+        if (urls && urls.length > 0) {
+          hasUrls = true;
+          button.style.display = ''; // Show the button
+          
+          // Remove existing event listener if any
+          button.replaceWith(button.cloneNode(true)); 
+          const newButton = document.getElementById(buttonId);
+          newButton.addEventListener("click", () => {
+            addIframe(urls); // Add iframe logic
+          });
+        } else {
+          button.style.display = 'none'; // Hide the button if no URLs
+        }
       });
-    }
+
+      // Show/hide the split element based on the presence of URLs
+      split.style.display = hasUrls ? '' : 'none';
+
+      // Optionally hide the edit container (you can adjust this logic)
+      editContainer.style.display = 'none';
+    });
   });
 });
 
 
+// Edit all URLs settings
+editAllButton.addEventListener("click", async () => {
+
+  chrome.storage.local.get("group", (data) => {
+    const group = data.group || { one: '', two: '', three: '', four: '' };
+
+    oneUrlsInput.value = group.one;
+    twoUrlsInput.value = group.two;
+    threeUrlsInput.value = group.three;
+    fourUrlsInput.value = group.four;
+    editContainer.style.display =
+      editContainer.style.display === "none" ? "flex" : "none";
+  })
+});
+
+
+deleteAllButton.addEventListener("click", async () => {
+
+  const iframeWrappers = document.querySelectorAll('.iframe-wrapper');
+  iframeWrappers.forEach(wrapper => {
+    wrapper.remove();
+  });
+});
 
 pcUAButton.addEventListener("click", () => {
   chrome.declarativeNetRequest.getDynamicRules((rules) => {
@@ -413,6 +587,12 @@ pcUAButton.addEventListener("click", () => {
 
       const existingFilters = new Set(uaRules.map((rule) => rule.condition.urlFilter));
 
+      // If the input hasn't changed, do nothing
+      if (newUrls.length === existingFilters.size && newUrls.every(url => existingFilters.has(url))) {
+        console.log("No changes in the input URLs. Exiting.");
+        return; // No change, so do nothing
+      }
+
       // Determine rules to add and remove
       const urlsToRemove = Array.from(existingFilters).filter((url) => !newUrls.includes(url));
       const urlsToAdd = newUrls.filter((url) => !existingFilters.has(url));
@@ -440,7 +620,18 @@ pcUAButton.addEventListener("click", () => {
         },
       }));
 
-      // Update dynamic rules
+      // Check if there are any iframes on the page before reload
+      const iframes = Array.from(document.getElementsByTagName('iframe'));
+      const iframeUrls = iframes.map((iframe) => iframe.getAttribute("src")).filter(Boolean); // Only get valid URLs
+
+      // Save iframe URLs to chrome.storage.local if there are any
+      if (iframeUrls.length > 0) {
+        chrome.storage.local.set({ lastUrls: iframeUrls }, () => {
+          console.log("Iframe URLs saved to chrome.storage.local:", iframeUrls);
+        });
+      }
+
+      // Update dynamic rules and reload the page
       chrome.declarativeNetRequest.updateDynamicRules(
         {
           addRules: newRules,
@@ -448,9 +639,84 @@ pcUAButton.addEventListener("click", () => {
         },
         () => {
           console.log("Rules updated:", { added: newRules, removed: rulesToRemove });
+          // Reload the page
           window.location.reload();
         }
       );
     }
   });
 });
+
+
+rotateButton.addEventListener("click", async () => {
+  // Retrieve the current list of URLs from chrome.storage.local
+  chrome.storage.local.get('vertical', (data) => {
+    // If URLs exist, format them as a semicolon-separated list
+    const vertical = data.vertical ?? true;
+    const updatedVertical = !vertical;
+    // Save the updated URLs back to chrome.storage.local
+    chrome.storage.local.set({ 'vertical': updatedVertical }, () => {
+      if (!updatedVertical) {
+        setHorizonStyle();
+      } else {
+        unsetHorizonStyle();
+      }
+    });
+
+  });
+});
+
+function setHorizonStyle() {
+  const iframeContainer = document.getElementById('iframeContainer');
+  if (iframeContainer) {
+    // Remove/disable flex wrap
+    iframeContainer.style.flexWrap = 'nowrap';
+
+    // Remove/disable justify content
+    iframeContainer.style.justifyContent = 'space-between';
+
+    // Add horizontal overflow
+    iframeContainer.style.overflowX = 'auto';
+  } else {
+    console.error('Element with id "iframeContainer" not found.');
+  }
+
+  // Get all elements with the class 'iframe-wrapper'
+  const iframeWrappers = document.querySelectorAll('.iframe-wrapper');
+
+  // Iterate through each element and set the flex property
+  iframeWrappers.forEach((wrapper) => {
+    wrapper.style.flex = '0 0 auto';
+  });
+
+  const offsetTop = iframeContainer.getBoundingClientRect().top;
+  const viewportHeight = window.innerHeight;
+  const availableHeight = viewportHeight - offsetTop - 40;
+  iframeContainer.style.height = `${availableHeight}px`;
+}
+
+function unsetHorizonStyle() {
+  const iframeContainer = document.getElementById('iframeContainer');
+  if (iframeContainer) {
+    // Remove/disable flex wrap
+    iframeContainer.style.flexWrap = 'wrap';
+
+    // Remove/disable justify content
+    iframeContainer.style.justifyContent = 'space-around';
+
+    // Add horizontal overflow
+    iframeContainer.style.overflowX = '';
+  } else {
+    console.error('Element with id "iframeContainer" not found.');
+  }
+
+  // Get all elements with the class 'iframe-wrapper'
+  const iframeWrappers = document.querySelectorAll('.iframe-wrapper');
+
+  // Iterate through each element and set the flex property
+  iframeWrappers.forEach((wrapper) => {
+    wrapper.style.flex = '';
+  });
+  iframeContainer.style.height = ``;
+
+}
