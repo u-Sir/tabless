@@ -25,7 +25,7 @@ let iframeGap = 20; // Default gap
 document.addEventListener("DOMContentLoaded", () => {
   chrome.storage.local.get(["iframeUrls", "iframeSettings", "group", "lastUrls"], (data) => {
     const urls = data.lastUrls || [];
-    const group = data.group || { one: '', two: '', three: '', four: '' };
+    const group = data.group || { Star: '', Sailing: '', Flower: '', Coffee: '' };
     const settings = data.iframeSettings || { width: 375, height: 667, gap: 20 };
 
     iframeWidth = settings.width;
@@ -36,27 +36,25 @@ document.addEventListener("DOMContentLoaded", () => {
     iframeHeightInput.value = iframeHeight;
     iframeGapInput.value = iframeGap;
 
-    oneUrlsInput.value = group.one;
-    twoUrlsInput.value = group.two;
-    threeUrlsInput.value = group.three;
-    fourUrlsInput.value = group.four;
+    oneUrlsInput.value = group.Star;
+    twoUrlsInput.value = group.Sailing;
+    threeUrlsInput.value = group.Flower;
+    fourUrlsInput.value = group.Coffee;
 
     const iframeContainer = document.querySelector('#iframeContainer');
     iframeContainer.style.gap = `${iframeGap}px`; // Set the new gap
 
-    // urls.forEach((url) => createIframe(url));
-    buttonID = ['oneButton', 'twoButton', 'threeButton', 'fourButton'];
     // Explicit mapping of button IDs to group keys
     const buttonToGroupMap = {
-      oneButton: 'one',
-      twoButton: 'two',
-      threeButton: 'three',
-      fourButton: 'four',
+      oneButton: 'Star',
+      twoButton: 'Sailing',
+      threeButton: 'Flower',
+      fourButton: 'Coffee',
     };
 
     // Iterate through buttonToGroupMap
-    Object.entries(buttonToGroupMap).forEach(([buttonId, groupKey]) => {
-      const button = document.getElementById(buttonId); // Get button by ID
+    Object.entries(buttonToGroupMap).forEach(([buttonID, groupKey]) => {
+      const button = document.getElementById(buttonID); // Get button by ID
       const urls = group[groupKey]; // Get URLs for the group key
 
       const split = document.getElementById('split-end'); // Get button by ID
@@ -64,11 +62,18 @@ document.addEventListener("DOMContentLoaded", () => {
         split.style.display = '';
         // Bind click event if group has URLs
         function open() {
+
+          const iframeWrappers = document.querySelectorAll('.iframe-wrapper');
+          iframeWrappers.forEach(wrapper => {
+            wrapper.remove();
+          });
           addIframe(urls);
           // Add your specific click event logic here
+          document.title = buttonToGroupMap[buttonID];
         }
         button.removeEventListener('click', open);
         button.addEventListener('click', open);
+
       } else {
         // Hide button if no URLs in the group
         button.style.display = 'none';
@@ -146,73 +151,158 @@ function createIframe(url) {
     getTitleFromUrl(url);
 
     title.addEventListener("click", () => {
-      // Get iframeUrls from chrome.storage.local
-      chrome.storage.local.get('iframeUrls', (data) => {
-        const urls = data.iframeUrls || [];
-        const index = urls.indexOf(url);  // Find the current URL's index
-
-        if (index === -1) {
-          return; // URL not found in storage, exit early
-        }
-
-
-        // Create the index selector dropdown
-        const selector = document.createElement("select");
-        selector.style.position = 'absolute';  // Position it dynamically on the page
-        selector.style.zIndex = '1000';       // Ensure it's on top of other elements
-
-        // Add options to the dropdown for each URL in iframeUrls
-        urls.forEach((url, idx) => {
-          const option = document.createElement("option");
-          option.value = idx;
-          option.textContent = `${idx + 1}. ${url}`;
-          selector.appendChild(option);
-        });
-
-        // Set the current URL as the selected option
-        selector.value = index;
-
-        // Get the bounding rect of the title element
-        const titleRect = title.getBoundingClientRect();
-
-        // Set the dropdown position to appear next to the title (adjust these values if necessary)
-        selector.style.top = `${titleRect.top + window.scrollY}px`; // 5px offset from the bottom of title
-        selector.style.left = `${titleRect.left + window.scrollX}px`; // Align with left of title
-
-        // Append the selector to the body (or any specific container)
-        document.body.appendChild(selector);
-
-        // Add event listener to remove the selector when clicking outside or on a different element
-        const removeSelector = () => {
-          document.body.removeChild(selector);
-        };
-
-        // Remove the selector when clicking outside the selector or the iframe container
-        document.addEventListener('click', (event) => {
-          if (!selector.contains(event.target) && !titleBar.contains(event.target)) {
-            removeSelector();
+      // Get iframeUrls and group from chrome.storage.local
+      chrome.storage.local.get(['iframeUrls', 'group'], (data) => {
+        const iframeUrls = data.iframeUrls || [];
+        const group = data.group || {};
+    
+        const currentTitle = document.title;  // Get the current title and remove leading/trailing spaces
+    
+        // Check if the current title exists in the group object
+        if (group[currentTitle]) {
+    
+          // The title exists in the group, so we will update the group
+          const urls = group[currentTitle].split(";");  // Assume URLs are stored as a semicolon-separated string
+    
+          const index = urls.indexOf(url) !== -1 ? urls.indexOf(url) : urls.indexOf(url.replace(/^https?:\/\//, ''));  // Find the current URL's index
+    
+          if (index === -1) {
+            return; // URL not found in the group, exit early
           }
-        }, { once: true });
-
-        // Add an event listener for when the user selects an index
-        selector.addEventListener("change", () => {
-          const selectedIndex = parseInt(selector.value);  // Get selected index
-
-          // Swap the URL at the current index with the selected index
-          const temp = urls[index];
-          urls[index] = urls[selectedIndex];
-          urls[selectedIndex] = temp;
-
-          // Save the updated iframeUrls to chrome.storage.local
-          chrome.storage.local.set({ iframeUrls: urls }, () => {
-            // Optionally, update the title or any other UI elements here
-            title.textContent = urls[selectedIndex];  // Update the title to the selected URL
-            document.body.removeChild(selector);  // Remove the selector from the DOM after selection
-            window.location.reload();  // Reload the page to reflect the changes
+    
+          // Create the index selector dropdown
+          const selector = document.createElement("select");
+          selector.style.position = 'absolute';  // Position it dynamically on the page
+          selector.style.zIndex = '1000';       // Ensure it's on top of other elements
+    
+          // Add options to the dropdown for each URL in the group
+          urls.forEach((url, idx) => {
+            const option = document.createElement("option");
+            option.value = idx;
+            option.textContent = `${idx + 1}. ${url}`;
+            selector.appendChild(option);
           });
-        });
+    
+          // Set the current URL as the selected option
+          selector.value = index;
+    
+          // Get the bounding rect of the title element
+          const titleRect = title.getBoundingClientRect();
+    
+          // Set the dropdown position to appear next to the title
+          selector.style.top = `${titleRect.top + window.scrollY + titleRect.height + 5}px`; // Position below the title
+          selector.style.left = `${titleRect.left + window.scrollX}px`; // Align with left of title
+    
+          // Append the selector to the body
+          document.body.appendChild(selector);
+    
+          // Add event listener to remove the selector when clicking outside
+          const removeSelector = () => {
+            document.body.removeChild(selector);
+          };
+    
+          // Remove the selector when clicking outside or on a different element
+          document.addEventListener('click', (event) => {
+            if (!selector.contains(event.target) && !title.contains(event.target)) {
+              removeSelector();
+            }
+          }, { once: true });
+    
+          // Add an event listener for when the user selects an index
+          selector.addEventListener("change", () => {
+            const selectedIndex = parseInt(selector.value);  // Get selected index
+    
+            // Swap the URL at the current index with the selected index
+            const temp = urls[index];
+            urls[index] = urls[selectedIndex];
+            urls[selectedIndex] = temp;
+    
+            // Update the group object in chrome.storage.local
+            group[currentTitle] = urls.join(";");  // Store URLs as a semicolon-separated string
+    
+            chrome.storage.local.set({ group: group }, () => {
+              // Optionally, update the title or any other UI elements
+              title.textContent = urls[selectedIndex];  // Update the title to the selected URL
+              document.body.removeChild(selector);  // Remove the selector from the DOM
+              const iframeWrappers = document.querySelectorAll('.iframe-wrapper');
+              iframeWrappers.forEach(wrapper => {
+                wrapper.remove();
+              });
+              addIframe(urls.join(";"));
+            });
+          });
+        } else {
+    
+          // Current title is not in the group, proceed with iframeUrls logic
+          const index = iframeUrls.indexOf(url);  // Find the current URL's index in iframeUrls
+    
+          if (index === -1) {
+            return; // URL not found in iframeUrls, exit early
+          }
+    
+          // Create the index selector dropdown
+          const selector = document.createElement("select");
+          selector.style.position = 'absolute';  // Position it dynamically on the page
+          selector.style.zIndex = '1000';       // Ensure it's on top of other elements
+    
+          // Add options to the dropdown for each URL in iframeUrls
+          iframeUrls.forEach((url, idx) => {
+            const option = document.createElement("option");
+            option.value = idx;
+            option.textContent = `${idx + 1}. ${url}`;
+            selector.appendChild(option);
+          });
+    
+          // Set the current URL as the selected option
+          selector.value = index;
+    
+          // Get the bounding rect of the title element
+          const titleRect = title.getBoundingClientRect();
+    
+          // Set the dropdown position to appear next to the title
+          selector.style.top = `${titleRect.top + window.scrollY + titleRect.height + 5}px`; // Position below the title
+          selector.style.left = `${titleRect.left + window.scrollX}px`; // Align with left of title
+    
+          // Append the selector to the body
+          document.body.appendChild(selector);
+    
+          // Add event listener to remove the selector when clicking outside
+          const removeSelector = () => {
+            document.body.removeChild(selector);
+          };
+    
+          // Remove the selector when clicking outside or on a different element
+          document.addEventListener('click', (event) => {
+            if (!selector.contains(event.target) && !title.contains(event.target)) {
+              removeSelector();
+            }
+          }, { once: true });
+    
+          // Add an event listener for when the user selects an index
+          selector.addEventListener("change", () => {
+            const selectedIndex = parseInt(selector.value);  // Get selected index
+    
+            // Swap the URL at the current index with the selected index
+            const temp = iframeUrls[index];
+            iframeUrls[index] = iframeUrls[selectedIndex];
+            iframeUrls[selectedIndex] = temp;
+    
+            // Save the updated iframeUrls to chrome.storage.local
+            chrome.storage.local.set({ iframeUrls: iframeUrls }, () => {
+              // Optionally, update the title or any other UI elements
+              title.textContent = iframeUrls[selectedIndex];  // Update the title to the selected URL
+              document.body.removeChild(selector);  // Remove the selector from the DOM
+              const iframeWrappers = document.querySelectorAll('.iframe-wrapper');
+              iframeWrappers.forEach(wrapper => {
+                wrapper.remove();
+              });
+              addIframe(iframeUrls.join(";"));
+            });
+          });
+        }
       });
     });
+    
 
     const removeButton = document.createElement("button");
     removeButton.innerHTML = `
@@ -232,7 +322,10 @@ function createIframe(url) {
         delete data.size[url]; // Remove the size settings for the current URL
       }
       iframeWrapper.remove();
-      saveUrls();
+      const iframeWrappers = document.querySelectorAll('.iframe-wrapper');
+      if (iframeWrappers.length === 0) {
+        document.title = '';
+      } 
     });
 
     const refreshButton = document.createElement("button");
@@ -299,9 +392,7 @@ function createIframe(url) {
           data.size = data.size || {};
           data.size[url] = { width, height }; // Update the iframeSettings.url directly
 
-          chrome.storage.local.set({ size: data.size }, () => {
-            // console.log("New iframe size saved:", { width, height });
-          });
+          chrome.storage.local.set({ size: data.size });
         } else {
           alert("Invalid input. Please enter the size in the format 'widthxheight' (e.g., '600x800').");
         }
@@ -430,6 +521,11 @@ saveSettingsButton.addEventListener("click", () => {
           gap: iframeGap,
         },
       }, () => {
+        if (hasGapChanged) {
+
+          const iframeContainer = document.getElementById('iframeContainer');
+          iframeContainer.style.gap = `${iframeGap}px`; // Set the new gap
+        }
         // Fetch stored iframe-specific sizes
         chrome.storage.local.get(["size"], (data) => {
           const sizeData = data.size || {};
@@ -483,20 +579,19 @@ saveEditButton.addEventListener("click", () => {
   // Save to local storage
   chrome.storage.local.set({
     group: {
-      one: oneUrls,
-      two: twoUrls,
-      three: threeUrls,
-      four: fourUrls
+      Star: oneUrls,
+      Sailing: twoUrls,
+      Flower: threeUrls,
+      Coffee: fourUrls
     },
   }, () => {
     chrome.storage.local.get(["group"], (data) => {
-      const group = data.group || { one: '', two: '', three: '', four: '' };
-      const buttonID = ['oneButton', 'twoButton', 'threeButton', 'fourButton'];
+      const group = data.group || { Star: '', Sailing: '', Flower: '', Coffee: '' };
       const buttonToGroupMap = {
-        oneButton: 'one',
-        twoButton: 'two',
-        threeButton: 'three',
-        fourButton: 'four',
+        oneButton: 'Star',
+        twoButton: 'Sailing',
+        threeButton: 'Flower',
+        fourButton: 'Coffee',
       };
 
       const split = document.getElementById('split-end');
@@ -504,19 +599,24 @@ saveEditButton.addEventListener("click", () => {
       let hasUrls = false;
 
       // Iterate through buttonToGroupMap
-      Object.entries(buttonToGroupMap).forEach(([buttonId, groupKey]) => {
-        const button = document.getElementById(buttonId);
+      Object.entries(buttonToGroupMap).forEach(([buttonID, groupKey]) => {
+        const button = document.getElementById(buttonID);
         const urls = group[groupKey];
 
         if (urls && urls.length > 0) {
           hasUrls = true;
           button.style.display = ''; // Show the button
-          
+
           // Remove existing event listener if any
-          button.replaceWith(button.cloneNode(true)); 
-          const newButton = document.getElementById(buttonId);
+          button.replaceWith(button.cloneNode(true));
+          const newButton = document.getElementById(buttonID);
           newButton.addEventListener("click", () => {
+            const iframeWrappers = document.querySelectorAll('.iframe-wrapper');
+            iframeWrappers.forEach(wrapper => {
+              wrapper.remove();
+            });
             addIframe(urls); // Add iframe logic
+            document.title = buttonToGroupMap[buttonID]; // Set the document title
           });
         } else {
           button.style.display = 'none'; // Hide the button if no URLs
@@ -537,12 +637,12 @@ saveEditButton.addEventListener("click", () => {
 editAllButton.addEventListener("click", async () => {
 
   chrome.storage.local.get("group", (data) => {
-    const group = data.group || { one: '', two: '', three: '', four: '' };
+    const group = data.group || { Star: '', Sailing: '', Flower: '', Coffee: '' };
 
-    oneUrlsInput.value = group.one;
-    twoUrlsInput.value = group.two;
-    threeUrlsInput.value = group.three;
-    fourUrlsInput.value = group.four;
+    oneUrlsInput.value = group.Star;
+    twoUrlsInput.value = group.Sailing;
+    threeUrlsInput.value = group.Flower;
+    fourUrlsInput.value = group.Coffee;
     editContainer.style.display =
       editContainer.style.display === "none" ? "flex" : "none";
   })
@@ -550,7 +650,7 @@ editAllButton.addEventListener("click", async () => {
 
 
 deleteAllButton.addEventListener("click", async () => {
-
+  document.title = "";
   const iframeWrappers = document.querySelectorAll('.iframe-wrapper');
   iframeWrappers.forEach(wrapper => {
     wrapper.remove();
@@ -589,7 +689,6 @@ pcUAButton.addEventListener("click", () => {
 
       // If the input hasn't changed, do nothing
       if (newUrls.length === existingFilters.size && newUrls.every(url => existingFilters.has(url))) {
-        console.log("No changes in the input URLs. Exiting.");
         return; // No change, so do nothing
       }
 
@@ -626,9 +725,7 @@ pcUAButton.addEventListener("click", () => {
 
       // Save iframe URLs to chrome.storage.local if there are any
       if (iframeUrls.length > 0) {
-        chrome.storage.local.set({ lastUrls: iframeUrls }, () => {
-          console.log("Iframe URLs saved to chrome.storage.local:", iframeUrls);
-        });
+        chrome.storage.local.set({ lastUrls: iframeUrls });
       }
 
       // Update dynamic rules and reload the page
@@ -638,9 +735,14 @@ pcUAButton.addEventListener("click", () => {
           removeRuleIds: rulesToRemove,
         },
         () => {
-          console.log("Rules updated:", { added: newRules, removed: rulesToRemove });
-          // Reload the page
-          window.location.reload();
+          const iframeWrappers = document.querySelectorAll('.iframe-wrapper');
+          iframeWrappers.forEach(wrapper => {
+            // get the iframe URL under the current iframe-wrapper
+            const src = wrapper.querySelector('iframe').getAttribute('src');
+            // refresh the iframe
+            wrapper.querySelector('iframe').src = src;
+          });
+
         }
       );
     }
