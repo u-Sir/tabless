@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Tabless",
-    "version": "1.7",
+    "version": "1.8",
     "permissions": [
         "declarativeNetRequest",
         "storage"
@@ -13,7 +13,7 @@
         "scripts": ["background.js"]
     },
     "chrome_url_overrides": {
-        "newtab": "custom_page.html"
+        "newtab": "./custom_page/custom_page.html"
     },
     "icons": {
         "16": "icon.svg",
