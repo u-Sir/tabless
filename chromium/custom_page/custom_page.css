@@ -28,6 +28,7 @@ button {
 
 button:hover {
     color: #D7716E;
+    cursor: pointer;
 }
 
 #iframeContainer {
@@ -80,6 +81,7 @@ button:hover {
 
 .iframe-title-bar button:hover {
     color: #D7716E;
+    cursor: pointer;
 }
 
 .iframe-title-bar span:hover {
@@ -130,7 +132,6 @@ input[type="number"] {
 /* Change the fill color of the g element when hovering over the svg */
 svg:hover #Dribbble-Light-Preview {
     fill: #D7716E;
-    /* Change to the color you want on hover */
 }
 
 #Layer_1 {
@@ -143,14 +144,16 @@ svg:hover #Dribbble-Light-Preview {
 
 
 body.light-mode .iframe-title-bar {
-    background-color: white; /* Simple white background for light mode */
-    color: black; /* Black text for better contrast in light mode */
+    background-color: white;
+    /* Simple white background for light mode */
+    color: black;
+    /* Black text for better contrast in light mode */
     background-image: none;
-  }
-  
-  body.dark-mode .iframe-title-bar {
+}
+
+
+body.dark-mode .iframe-title-bar {
     background-color: rgb(28 28 30 / var(--un-bg-opacity));
     background-image: radial-gradient(ellipse 80% 80% at 50% -30%, #f871714d, #fff0);
     color: rgb(212 212 212 / var(--un-text-opacity));
-  }
-  
+}

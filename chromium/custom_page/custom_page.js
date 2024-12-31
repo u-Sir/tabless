@@ -66,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
         split.style.display = '';
         // Bind click event if group has URLs
         function open() {
+          hideSettings();
 
           const iframeWrappers = document.querySelectorAll('.iframe-wrapper');
           iframeWrappers.forEach(wrapper => {
@@ -87,6 +88,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (urls.length > 0) {
       urls.forEach((url) => createIframe(url));
       chrome.storage.local.set({ lastUrls: [] });
+    }
+
+    if (window.location.href.includes("?")) {
+      const groupKey = window.location.href.split("?")[1];
+      const urls = group[groupKey];
+      if (urls && urls.length > 0) {
+        const iframeWrappers = document.querySelectorAll('.iframe-wrapper');
+        iframeWrappers.forEach(wrapper => {
+          wrapper.remove();
+        });
+        addIframe(urls);
+        document.title = groupKey;
+      }
     }
 
 
@@ -155,6 +169,7 @@ function createIframe(url) {
     getTitleFromUrl(url);
 
     title.addEventListener("click", () => {
+      hideSettings();
       // Get iframeUrls and group from chrome.storage.local
       chrome.storage.local.get(['iframeUrls', 'group'], (data) => {
         const iframeUrls = data.iframeUrls || [];
@@ -227,6 +242,7 @@ function createIframe(url) {
             chrome.storage.local.set({ group: group }, () => {
               // Optionally, update the title or any other UI elements
               title.textContent = urls[selectedIndex];  // Update the title to the selected URL
+              selector.removeEventListener("blur", handleBlur); // Remove blur listener
               document.body.removeChild(selector);  // Remove the selector from the DOM
               const iframeWrappers = document.querySelectorAll('.iframe-wrapper');
               iframeWrappers.forEach(wrapper => {
@@ -235,6 +251,15 @@ function createIframe(url) {
               addIframe(urls.join(";"));
             });
           });
+          // Define the blur event handler
+          const handleBlur = () => {
+            if (document.body.contains(selector)) {
+              selector.removeEventListener("blur", handleBlur); // Remove blur listener
+              document.body.removeChild(selector); // Remove the selector
+            }
+          };
+          // Add an event listener for when the selector loses focus
+          selector.addEventListener("blur", handleBlur, { once: true });
         } else {
 
           // Current title is not in the group, proceed with iframeUrls logic
@@ -322,6 +347,7 @@ function createIframe(url) {
 `;
 
     removeButton.addEventListener("click", () => {
+      hideSettings();
       if (data.size && data.size[url]) {
         delete data.size[url]; // Remove the size settings for the current URL
       }
@@ -345,6 +371,7 @@ function createIframe(url) {
 </svg>
 `;
     refreshButton.addEventListener("click", () => {
+      hideSettings();
       iframe.src = iframe.getAttribute("src"); // Reload iframe
       getTitleFromUrl(iframe.getAttribute("src"));  // Fetch title again after refresh
     });
@@ -363,6 +390,7 @@ function createIframe(url) {
 `;
 
     editButton.addEventListener("click", () => {
+      hideSettings();
       const currentUrl = iframe.getAttribute('src'); // Get the current URL of the iframe
       let newUrl = prompt("URL:", currentUrl); // Prompt for the new URL
 
@@ -388,6 +416,7 @@ function createIframe(url) {
 `;
 
     resizeButton.addEventListener("click", () => {
+      hideSettings();
       // Show prompt with default size in "width:height" format
       const currentWidth = iframeWrapper.style.width.replace("px", "") || iframeWrapper.offsetWidth;
       const currentHeight = iframeWrapper.style.height.replace("px", "") || iframeWrapper.offsetHeight;
@@ -420,6 +449,7 @@ function createIframe(url) {
 <svg width="14px" height="14px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>profile [#1335]</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-420.000000, -2159.000000)" fill="#cecece"> <g id="icons" transform="translate(56.000000, 160.000000)"> <path d="M374,2009 C371.794,2009 370,2007.206 370,2005 C370,2002.794 371.794,2001 374,2001 C376.206,2001 378,2002.794 378,2005 C378,2007.206 376.206,2009 374,2009 M377.758,2009.673 C379.124,2008.574 380,2006.89 380,2005 C380,2001.686 377.314,1999 374,1999 C370.686,1999 368,2001.686 368,2005 C368,2006.89 368.876,2008.574 370.242,2009.673 C366.583,2011.048 364,2014.445 364,2019 L366,2019 C366,2014 369.589,2011 374,2011 C378.411,2011 382,2014 382,2019 L384,2019 C384,2014.445 381.417,2011.048 377.758,2009.673" id="profile-[#1335]"> </path> </g> </g> </g> </g></svg>`;
 
     signInButton.addEventListener("click", () => {
+      hideSettings();
       window.open(url, "_blank"); // Opens the URL in a new tab
     });
 
@@ -466,11 +496,7 @@ function createIframe(url) {
 
 // Add new iframe URLs (supporting multiple URLs separated by semicolons)
 addButton.addEventListener("click", () => {
-
-  const settingsContainer = document.getElementById("settingsContainer");
-  settingsContainer.style.display = "none";
-  const editContainer = document.getElementById("editContainer");
-  editContainer.style.display = "none";
+  hideSettings();
   let urls = prompt("URLs: example.com;https://www.example2.com");
   addIframe(urls);
 });
@@ -633,6 +659,7 @@ saveEditButton.addEventListener("click", () => {
           button.replaceWith(button.cloneNode(true));
           const newButton = document.getElementById(buttonID);
           newButton.addEventListener("click", () => {
+            hideSettings();
             const iframeWrappers = document.querySelectorAll('.iframe-wrapper');
             iframeWrappers.forEach(wrapper => {
               wrapper.remove();
@@ -687,6 +714,7 @@ editAllButton.addEventListener("click", async () => {
 
 
 deleteAllButton.addEventListener("click", async () => {
+  hideSettings();
   document.title = "";
   const iframeWrappers = document.querySelectorAll('.iframe-wrapper');
   iframeWrappers.forEach(wrapper => {
@@ -695,6 +723,7 @@ deleteAllButton.addEventListener("click", async () => {
 });
 
 modeButton.addEventListener("click", async () => {
+  hideSettings();
   chrome.storage.local.get('mode', (data) => {
     const mode = data.mode || 'dark';
     const updatedMode = mode === 'dark' ? 'light' : 'dark';
@@ -708,32 +737,36 @@ modeButton.addEventListener("click", async () => {
 function setMode(mode) {
   document.documentElement.setAttribute('data-theme', mode);
 
-      // Toggle body class
-      document.body.classList.remove('light-mode', 'dark-mode');
-      document.body.classList.add(`${mode}-mode`);
+  // Toggle body class
+  document.body.classList.remove('light-mode', 'dark-mode');
+  document.body.classList.add(`${mode}-mode`);
 
-      // Update body background styles
-      if (mode === 'light') {
-        document.body.style.background = `
+  // Update body background styles
+  if (mode === 'light') {
+    document.body.style.background = `
           radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,188,233,1) 100%)`;
-        document.body.style.filter = `
+    document.body.style.filter = `
           progid:DXImageTransform.Microsoft.gradient(startColorstr="#eeaeca",endColorstr="#94bce9",GradientType=1)`;
-      } else {
-        document.body.style.backgroundColor = 'rgb(28 28 30 / var(--un-bg-opacity))';
-        document.body.style.backgroundImage = `
+  } else {
+    document.body.style.backgroundColor = 'rgb(28 28 30 / var(--un-bg-opacity))';
+    document.body.style.backgroundImage = `
           radial-gradient(ellipse 80% 80% at 50% -30%, #f871714d, #fff0)`;
-        document.body.style.backgroundSize = 'cover';
-        document.body.style.backgroundRepeat = 'no-repeat';
-        document.body.style.filter = ''; // Clear light mode filter
-      }
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundRepeat = 'no-repeat';
+    document.body.style.filter = ''; // Clear light mode filter
+  }
 }
 
+function hideSettings() {
 
-pcUAButton.addEventListener("click", () => {
   const settingsContainer = document.getElementById("settingsContainer");
   settingsContainer.style.display = "none";
   const editContainer = document.getElementById("editContainer");
   editContainer.style.display = "none";
+}
+
+pcUAButton.addEventListener("click", () => {
+  hideSettings();
   chrome.declarativeNetRequest.getDynamicRules((rules) => {
     const pcUAValue =
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36";
@@ -827,6 +860,7 @@ pcUAButton.addEventListener("click", () => {
 
 
 rotateButton.addEventListener("click", async () => {
+  hideSettings();
   // Retrieve the current list of URLs from chrome.storage.local
   chrome.storage.local.get('vertical', (data) => {
     // If URLs exist, format them as a semicolon-separated list

@@ -147,3 +147,28 @@ chrome.runtime.onInstalled.addListener(() => {
         }
     });
 });
+
+
+chrome.commands.onCommand.addListener((command) => {
+    chrome.storage.local.get('group', function (result) {
+        if (!result || !result.group) return;
+
+        if (command === "star_group" && result.group.Star ) {
+            // open a new tab with custom_page
+            chrome.tabs.create({ url: "./custom_page/custom_page.html?Star" });
+
+        }
+        if (command === "sailing_group" && result.group.Sailing ) {
+    
+            chrome.tabs.create({ url: "./custom_page/custom_page.html?Sailing" });
+        }
+        if (command === "flower_group" && result.group.Flower ) {
+    
+            chrome.tabs.create({ url: "./custom_page/custom_page.html?Flower" });
+        }
+        if (command === "coffee_group" && result.group.Coffee ) {
+    
+            chrome.tabs.create({ url: "./custom_page/custom_page.html?Coffee" });
+        }
+    })
+});

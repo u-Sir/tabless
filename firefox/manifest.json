@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Tabless",
-    "version": "1.8",
+    "version": "1.9",
     "permissions": [
         "declarativeNetRequest",
         "storage"
@@ -15,6 +15,9 @@
     "chrome_url_overrides": {
         "newtab": "./custom_page/custom_page.html"
     },
+    "chrome_settings_overrides": {
+        "homepage": "./custom_page/custom_page.html"
+    },
     "icons": {
         "16": "icon.svg",
         "48": "icon.svg",
@@ -24,5 +27,19 @@
         "gecko": {
             "id": "hall_of_iFrame@uxer"
         }
+    },
+    "commands": {
+      "star_group": {
+        "description": "Star"
+      },
+      "sailing_group": {
+        "description": "Sailing"
+      },
+      "flower_group": {
+        "description": "Flower"
+      },
+      "coffee_group": {
+        "description": "Coffee"
+      }
     }
 }

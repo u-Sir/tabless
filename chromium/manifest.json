@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Tabless",
-    "version": "1.8",
+    "version": "1.9",
     "permissions": [
         "declarativeNetRequest",
         "storage"
@@ -19,5 +19,19 @@
         "16": "icon.png",
         "48": "icon.png",
         "128": "icon.png"
+    },
+    "commands": {
+      "star_group": {
+        "description": "Star"
+      },
+      "sailing_group": {
+        "description": "Sailing"
+      },
+      "flower_group": {
+        "description": "Flower"
+      },
+      "coffee_group": {
+        "description": "Coffee"
+      }
     }
 }
