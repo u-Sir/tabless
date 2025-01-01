@@ -30,7 +30,7 @@
                         </g>
                     </g>
                 </svg> </a></button>
-        <button id="split">
+        <button id="split" style="cursor: unset;">
             <svg width="20px" height="20px" viewBox="0 -9.5 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink" fill="#D7716E" transform="rotate(90)">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -194,7 +194,7 @@
                 </g>
 
             </svg></button>
-        <button id="split-end" style="display: none;">
+        <button id="split-end" style="display: none; cursor: unset;">
             <svg width="20px" height="20px" viewBox="0 -9.5 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink" fill="#D7716E" transform="rotate(90)">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -286,6 +286,20 @@
                     </g>
                 </g>
             </svg></button>
+    </div>
+    <div id="addContainer" style="display: none;">
+
+        <label>
+            <input id="addURLs" type="text" style="width: 500px;" placeholder="example.com;https://www.example2.com" />
+        </label>
+        <button id="saveAddButton">✔</button>
+    </div>
+    <div id="uaContainer" style="display: none;">
+
+        <label>
+            <input id="uaRules" type="text" style="width: 500px;" placeholder="*example.com;*.example2.com/*" />
+        </label>
+        <button id="saveUAButton">✔</button>
     </div>
     <div id="settingsContainer" style="display: none;">
 

@@ -8,6 +8,8 @@ const modeButton = document.getElementById("modeButton");
 const rotateButton = document.getElementById("rotateButton");
 const settingsContainer = document.getElementById("settingsContainer");
 const editContainer = document.getElementById("editContainer");
+const addContainer = document.getElementById("addContainer");
+const uaContainer = document.getElementById("uaContainer");
 const iframeWidthInput = document.getElementById("iframeWidth");
 const iframeHeightInput = document.getElementById("iframeHeight");
 const oneUrlsInput = document.getElementById("oneUrls");
@@ -15,8 +17,12 @@ const twoUrlsInput = document.getElementById("twoUrls");
 const threeUrlsInput = document.getElementById("threeUrls");
 const fourUrlsInput = document.getElementById("fourUrls");
 const iframeGapInput = document.getElementById("iframeGap");
+const addURLsInput = document.getElementById("addURLs");
+const uaRulesInput = document.getElementById("uaRules");
 const saveSettingsButton = document.getElementById("saveSettingsButton");
 const saveEditButton = document.getElementById("saveEditButton");
+const saveAddButton = document.getElementById("saveAddButton");
+const saveUAButton = document.getElementById("saveUAButton");
 
 let iframeWidth = 375; // Default width
 let iframeHeight = 667; // Default height
@@ -438,7 +444,7 @@ function createIframe(url) {
 
           chrome.storage.local.set({ size: data.size });
         } else {
-          alert("Invalid input. Please enter the size in the format 'widthxheight' (e.g., '600x800').");
+          alert("×");
         }
       }
     });
@@ -491,16 +497,6 @@ function createIframe(url) {
   });
 }
 
-
-
-
-// Add new iframe URLs (supporting multiple URLs separated by semicolons)
-addButton.addEventListener("click", () => {
-  hideSettings();
-  let urls = prompt("URLs: example.com;https://www.example2.com");
-  addIframe(urls);
-});
-
 function addIframe(urls) {
 
   if (urls) {
@@ -525,6 +521,10 @@ settingsButton.addEventListener("click", () => {
 
   const editContainer = document.getElementById("editContainer");
   editContainer.style.display = "none";
+  const addContainer = document.getElementById("addContainer");
+  addContainer.style.display = "none";
+  const uaContainer = document.getElementById("uaContainer");
+  uaContainer.style.display = "none";
 
   chrome.storage.local.get("iframeSettings", (data) => {
     const settings = data.iframeSettings || { width: 375, height: 667, gap: 20 };
@@ -684,8 +684,14 @@ saveEditButton.addEventListener("click", () => {
 
 // Edit all URLs settings
 editAllButton.addEventListener("click", async () => {
+
   const settingsContainer = document.getElementById("settingsContainer");
   settingsContainer.style.display = "none";
+  const addContainer = document.getElementById("addContainer");
+  addContainer.style.display = "none";
+  const uaContainer = document.getElementById("uaContainer");
+  uaContainer.style.display = "none";
+
   chrome.storage.local.get("group", (data) => {
     const group = data.group || { Star: '', Sailing: '', Flower: '', Coffee: '' };
     const placeholder = "example.com;https://www.example2.com";
@@ -763,14 +769,48 @@ function hideSettings() {
   settingsContainer.style.display = "none";
   const editContainer = document.getElementById("editContainer");
   editContainer.style.display = "none";
+  const addContainer = document.getElementById("addContainer");
+  addContainer.style.display = "none";
+  const uaContainer = document.getElementById("uaContainer");
+  uaContainer.style.display = "none";
 }
 
-pcUAButton.addEventListener("click", () => {
+addButton.addEventListener("click", () => {
+
+
+  const settingsContainer = document.getElementById("settingsContainer");
+  settingsContainer.style.display = "none";
+  const editContainer = document.getElementById("editContainer");
+  editContainer.style.display = "none";
+  const uaContainer = document.getElementById("uaContainer");
+  uaContainer.style.display = "none";
+
+  // Show prompt with current URLs
+  addContainer.style.display =
+    addContainer.style.display === "none" ? "flex" : "none";
+  addContainer.style.justifyContent = "center";
+});
+
+// Add new iframe URLs (supporting multiple URLs separated by semicolons)
+saveAddButton.addEventListener("click", () => {
   hideSettings();
+  const urls = addURLsInput.value;
+  addIframe(urls);
+  addURLsInput.value = "";
+});
+
+pcUAButton.addEventListener("click", () => {
+
+  const settingsContainer = document.getElementById("settingsContainer");
+  settingsContainer.style.display = "none";
+  const editContainer = document.getElementById("editContainer");
+  editContainer.style.display = "none";
+  const addContainer = document.getElementById("addContainer");
+  addContainer.style.display = "none";
+
   chrome.declarativeNetRequest.getDynamicRules((rules) => {
     const pcUAValue =
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36";
-    let maxRuleId = rules.length > 0 ? Math.max(...rules.map((rule) => rule.id)) : 0;
 
     // Filter existing rules that modify User-Agent to PC UA
     const uaRules = rules.filter((rule) =>
@@ -783,10 +823,29 @@ pcUAButton.addEventListener("click", () => {
     const urlFilters = uaRules.map((rule) => rule.condition.urlFilter).join(";");
 
     // Show prompt with current URLs
-    const input = prompt(
-      "PC User-Agent URLs: \n*.example.com;https://www.example2.com/path/*",
-      urlFilters || ""
+    uaContainer.style.display =
+      uaContainer.style.display === "none" ? "flex" : "none";
+    uaContainer.style.justifyContent = "center";
+    uaRulesInput.value = urlFilters;
+
+  });
+});
+
+saveUAButton.addEventListener("click", () => {
+
+  chrome.declarativeNetRequest.getDynamicRules((rules) => {
+    const pcUAValue =
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36";
+    let maxRuleId = rules.length > 0 ? Math.max(...rules.map((rule) => rule.id)) : 0;
+    // Filter existing rules that modify User-Agent to PC UA
+    const uaRules = rules.filter((rule) =>
+      rule.action?.requestHeaders?.some(
+        (header) => header.header === "User-Agent" && header.value === pcUAValue
+      )
     );
+
+    hideSettings();
+    const input = uaRulesInput.value;
 
     if (input !== null) {
       const newUrls = input
@@ -857,7 +916,6 @@ pcUAButton.addEventListener("click", () => {
     }
   });
 });
-
 
 rotateButton.addEventListener("click", async () => {
   hideSettings();

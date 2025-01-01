@@ -1,4 +1,5 @@
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener((details) => {
+    if (details.reason !== "install") return;
     chrome.declarativeNetRequest.getDynamicRules((rules) => {
         // Map the existing rule IDs
         const ruleIds = rules.map((rule) => rule.id);
