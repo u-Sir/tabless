@@ -15,6 +15,7 @@
 - Format for URL filter rules: [MDN Reference](https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/declarativeNetRequest/RuleCondition#urlfilter)
 
 ### Revert Homepage or New Tab  
+Shortcuts remain functional as long as the add-on is enabled, even after reverting settings.  
 - Chromium:  
   Go to `chrome://settings/onStartup` to reset your homepage or new tab.  
 - Firefox:  
