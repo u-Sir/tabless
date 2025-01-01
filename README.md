@@ -4,6 +4,9 @@
 
 ![image](https://github.com/user-attachments/assets/bddc0768-42c6-41a0-8985-59b1c986f541)
 
+# PC User-Agent Rules Condition
+- Separate multiple rules using `;`
+- Format for URL filter rules: [MDN Reference](https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/declarativeNetRequest/RuleCondition#urlfilter)
 
 # Thanks
 Icon from: https://www.svgrepo.com/
