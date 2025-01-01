@@ -1,6 +1,15 @@
 <div align="center"><img src="https://github.com/user-attachments/assets/1aa0eb92-29f7-4d12-a672-6c1f11e01a1c" alt="Tabless"  style="height: 80px; width: 80px;">
 </div>
 <h1 align="center">Tabless</h1>
+<div align="center">
+
+[![](https://img.shields.io/github/v/release/u-Sir/tabless?label=Release&logo=github&display_name=release&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Ftabless%2Freleases&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Ftabless%2Freleases)](https://github.com/u-Sir/tabless/releases/latest)
+[![](https://img.shields.io/amo/v/tabless.svg?label=Firefox&logo=firefoxbrowser)](https://addons.mozilla.org/firefox/addon/tabless)
+[![](https://img.shields.io/badge/dynamic/json?label=Microsoft%20Edge&prefix=v&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Ffmfcjoemdaphjmneapjllooimdkcjoal)](https://microsoftedge.microsoft.com/addons/detail/fmfcjoemdaphjmneapjllooimdkcjoal)
+[![](https://img.shields.io/chrome-web-store/v/jdnghmlnjjibjgcgggjnegopapdanmbg.svg?label=Chrome%20Web%20Store&logo=googlechrome)](https://chrome.google.com/webstore/detail/jdnghmlnjjibjgcgggjnegopapdanmbg)
+
+</div>
+
 
 ![image](https://github.com/user-attachments/assets/bddc0768-42c6-41a0-8985-59b1c986f541)
 # Usage
