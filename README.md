@@ -30,6 +30,16 @@ Shortcuts remain functional as long as the add-on is enabled, even after reverti
 - Firefox:  
   Visit `about:preferences#home` to adjust homepage or new tab settings. 
 
+### Unsupported Websites  
+
+Due to security restrictions, not all websites can be loaded correctly.  
+
+Examples of Unsupported Websites  
+- Email platforms  
+- Social media sites like **X.com**  
+- Other restricted websites  
+
+
 # Thanks
 Icon from: https://www.svgrepo.com/
 
