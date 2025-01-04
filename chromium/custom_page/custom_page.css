@@ -56,10 +56,8 @@ button:hover {
     width: 100%;
     padding: 5px 10px;
     font-size: 14px;
-    --un-bg-opacity: 1;
-    background-color: rgb(28 28 30 / var(--un-bg-opacity));
-    background-image: radial-gradient(ellipse 80% 80% at 50% -30%, #f871714d, #fff0);
-    --un-text-opacity: 1;
+    background-color: #342728;
+    --un-bg-opacity: 0.4;
     color: rgb(212 212 212 / var(--un-text-opacity));
 }
 
@@ -143,17 +141,107 @@ svg:hover #Dribbble-Light-Preview {
 }
 
 
+
+body.light-mode {
+    --un-bg-opacity: 0;
+}
+
+body.light-mode #settingsContainer,
+body.light-mode #editContainer,
+body.light-mode input[type="number"] {
+    color: #262626;
+}
+
+body.light-mode .iframe-title-bar\! {
+    --un-bg-opacity: 0.4 !important;
+}
 body.light-mode .iframe-title-bar {
-    background-color: white;
-    /* Simple white background for light mode */
-    color: black;
-    /* Black text for better contrast in light mode */
+    background-color: rgb(239 68 68 / var(--un-bg-opacity));
     background-image: none;
 }
 
+body.light-mode .iframe-title-bar span:hover {
+    opacity: .85;
+    --un-text-opacity: 1;
+    color: rgb(248 113 113 / var(--un-text-opacity));
+}
+
+body.light-mode .iframe-wrapper {
+    box-shadow: 4px 4px 4px rgba(255, 156, 156, 0.1), -4px -4px 4px rgba(255, 156, 156, 0.1);
+}
+
+body.light-mode svg #Dribbble-Light-Preview {
+    opacity: .5;
+    --un-text-opacity: 1;
+    fill: rgb(248 113 113 / var(--un-text-opacity));
+}
+
+body.light-mode #Layer_1 {
+    opacity: .5;
+    --un-text-opacity: 1;
+    stroke: rgb(248 113 113 / var(--un-text-opacity));
+}
+
+body.light-mode #controls > button svg #Dribbble-Light-Preview {
+    opacity: .5;
+    --un-text-opacity: 1;
+    fill: rgb(220 38 38 / var(--un-text-opacity));
+}
+
+/* Change the fill color of the g element when hovering over the svg */
+body.light-mode svg:hover #Dribbble-Light-Preview,
+body.light-mode #Layer_1:hover,
+body.light-mode #controls > button svg:hover #Dribbble-Light-Preview,
+body.light-mode #controls > button #Layer_1:hover {
+    opacity: .85;
+}
+
+body.light-mode #controls > button #Layer_1 {
+    opacity: .5;
+    --un-text-opacity: 1;
+    stroke: rgb(220 38 38 / var(--un-text-opacity));
+}
+
+
+
+
+
+
+body.dark-mode .iframe-title-bar > span{
+    color: #D4D4D4;
+}
+body.dark-mode .iframe-title-bar > span:hover{
+    opacity: .85;
+    --un-text-opacity: 1;
+    color: rgb(248 113 113 / var(--un-text-opacity));
+}
 
 body.dark-mode .iframe-title-bar {
-    background-color: rgb(28 28 30 / var(--un-bg-opacity));
-    background-image: radial-gradient(ellipse 80% 80% at 50% -30%, #f871714d, #fff0);
-    color: rgb(212 212 212 / var(--un-text-opacity));
+    --un-bg-opacity: 0.4 !important;
+}
+body.dark-mode .iframe-title-bar {
+    background-color: rgb(248 113 113 / var(--un-bg-opacity));
+}
+
+body.dark-mode .iframe-wrapper {
+    box-shadow: none;
+    background-color: unset;
+}
+
+body.dark-mode svg #Dribbble-Light-Preview {
+    opacity: .5;
+    --un-text-opacity: 1;
+    fill: rgb(248 113 113 / var(--un-text-opacity));
+}
+
+body.dark-mode #Layer_1 {
+    opacity: .5;
+    --un-text-opacity: 1;
+    stroke: rgb(248 113 113 / var(--un-text-opacity));
+}
+
+/* Change the fill color of the g element when hovering over the svg */
+body.dark-mode #Layer_1:hover,
+body.dark-mode svg:hover #Dribbble-Light-Preview {
+    opacity: .85;
 }

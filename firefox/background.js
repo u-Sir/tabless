@@ -172,3 +172,7 @@ chrome.commands.onCommand.addListener((command) => {
         }
     })
 });
+
+chrome.action.onClicked.addListener(() => {
+    chrome.tabs.create({ url: "./custom_page/custom_page.html" });
+});

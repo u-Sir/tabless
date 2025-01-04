@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Tabless",
-    "version": "1.9.1",
+    "version": "1.9.2",
     "permissions": [
         "declarativeNetRequest",
         "storage"
@@ -29,6 +29,8 @@
         }
     },
     "commands": {
+      "_execute_action": { 
+      },
       "star_group": {
         "description": "Star"
       },
@@ -41,5 +43,7 @@
       "coffee_group": {
         "description": "Coffee"
       }
+    },
+    "action": { 
     }
 }

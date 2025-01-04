@@ -747,20 +747,7 @@ function setMode(mode) {
   document.body.classList.remove('light-mode', 'dark-mode');
   document.body.classList.add(`${mode}-mode`);
 
-  // Update body background styles
-  if (mode === 'light') {
-    document.body.style.background = `
-          radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,188,233,1) 100%)`;
-    document.body.style.filter = `
-          progid:DXImageTransform.Microsoft.gradient(startColorstr="#eeaeca",endColorstr="#94bce9",GradientType=1)`;
-  } else {
-    document.body.style.backgroundColor = 'rgb(28 28 30 / var(--un-bg-opacity))';
-    document.body.style.backgroundImage = `
-          radial-gradient(ellipse 80% 80% at 50% -30%, #f871714d, #fff0)`;
-    document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundRepeat = 'no-repeat';
-    document.body.style.filter = ''; // Clear light mode filter
-  }
+
 }
 
 function hideSettings() {
