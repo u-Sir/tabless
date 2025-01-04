@@ -13,6 +13,7 @@
 
 ![image](https://github.com/user-attachments/assets/bddc0768-42c6-41a0-8985-59b1c986f541)
 # Usage
+after install, open a new tab
 ### Shortcuts  
 - Chromium:  
   Navigate to `chrome://extensions/shortcuts` to manage extension shortcuts.  
