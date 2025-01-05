@@ -3,17 +3,17 @@
 <h1 align="center">Tabless</h1>
 <div align="center">
 
+An open-source add-on for displaying webpages in a new tab.
+
 [![](https://img.shields.io/github/v/release/u-Sir/tabless?label=Release&logo=github&display_name=release&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Ftabless%2Freleases&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Ftabless%2Freleases)](https://github.com/u-Sir/tabless/releases/latest)
 [![](https://img.shields.io/amo/v/tabless.svg?label=Firefox&logo=firefoxbrowser)](https://addons.mozilla.org/firefox/addon/tabless)
 [![](https://img.shields.io/badge/dynamic/json?label=Microsoft%20Edge&prefix=v&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Ffmfcjoemdaphjmneapjllooimdkcjoal)](https://microsoftedge.microsoft.com/addons/detail/fmfcjoemdaphjmneapjllooimdkcjoal)
 [![](https://img.shields.io/chrome-web-store/v/jdnghmlnjjibjgcgggjnegopapdanmbg.svg?label=Chrome%20Web%20Store&logo=googlechrome)](https://chrome.google.com/webstore/detail/jdnghmlnjjibjgcgggjnegopapdanmbg)
-
 </div>
 
+![image](https://github.com/user-attachments/assets/f49734cc-93e1-4446-b6fc-bcd6b1143f7d)
 
-![image](https://github.com/user-attachments/assets/bddc0768-42c6-41a0-8985-59b1c986f541)
 # Usage
-after install, open a new tab
 ### Shortcuts  
 - Chromium:  
   Navigate to `chrome://extensions/shortcuts` to manage extension shortcuts.  
