@@ -6,8 +6,8 @@
 An open-source add-on for displaying webpages in a new tab.
 
 [![](https://img.shields.io/github/v/release/u-Sir/tabless?label=Release&logo=github&display_name=release&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Ftabless%2Freleases&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Ftabless%2Freleases)](https://github.com/u-Sir/tabless/releases/latest)
-[![](https://img.shields.io/amo/v/tabless.svg?label=Firefox&logo=firefoxbrowser)](https://addons.mozilla.org/firefox/addon/tabless)
-[![](https://img.shields.io/badge/dynamic/json?label=Microsoft%20Edge&prefix=v&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Ffmfcjoemdaphjmneapjllooimdkcjoal)](https://microsoftedge.microsoft.com/addons/detail/fmfcjoemdaphjmneapjllooimdkcjoal)
+[![](https://img.shields.io/amo/v/tabless.svg?label=Firefox%20browser%20Add-ons&logo=firefoxbrowser)](https://addons.mozilla.org/firefox/addon/tabless)
+[![](https://img.shields.io/badge/dynamic/json?label=Microsoft%20Edge%20Add-ons&prefix=v&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Ffmfcjoemdaphjmneapjllooimdkcjoal)](https://microsoftedge.microsoft.com/addons/detail/fmfcjoemdaphjmneapjllooimdkcjoal)
 [![](https://img.shields.io/chrome-web-store/v/jdnghmlnjjibjgcgggjnegopapdanmbg.svg?label=Chrome%20Web%20Store&logo=googlechrome)](https://chrome.google.com/webstore/detail/jdnghmlnjjibjgcgggjnegopapdanmbg)
 </div>
 
