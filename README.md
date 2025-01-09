@@ -14,6 +14,13 @@ An open-source add-on for displaying webpages in a new tab.
 ![image](https://github.com/user-attachments/assets/f49734cc-93e1-4446-b6fc-bcd6b1143f7d)
 
 # Usage
+### How to Keep Your Original Tab Plugin Settings After Installing Tabless
+
+1. After installing Tabless, agree to modify the new tab page.
+2. Go to the browser's extensions page (`chrome://extensions/`) and re-enable your original tab page plugin (e.g., iTab). This will reset the new tab page to iTab.
+3. At this point, both the Tabless and your original tab page plugin (like iTab) will be enabled. You can set a shortcut to open Tabless or add it to the toolbar. Click the Tabless icon in the toolbar to open the page.
+
+
 ### Shortcuts  
 - Chromium:  
   Navigate to `chrome://extensions/shortcuts` to manage extension shortcuts.  
