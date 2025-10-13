@@ -1,49 +1,54 @@
 {
-    "manifest_version": 3,
-    "name": "Tabless",
-    "version": "1.9.4",
-    "permissions": [
-        "declarativeNetRequest",
-        "storage"
-    ],
-    "host_permissions": [
-        "<all_urls>"
-    ],
-    "background": {
-        "scripts": ["background.js"]
-    },
-    "chrome_url_overrides": {
-        "newtab": "./custom_page/custom_page.html"
-    },
-    "chrome_settings_overrides": {
-        "homepage": "./custom_page/custom_page.html"
-    },
-    "icons": {
-        "16": "icon.svg",
-        "48": "icon.svg",
-        "128": "icon.svg"
-    },
-    "browser_specific_settings": {
-        "gecko": {
-            "id": "hall_of_iFrame@uxer"
-        }
-    },
-    "commands": {
-      "_execute_action": { 
-      },
-      "star_group": {
-        "description": "Star"
-      },
-      "sailing_group": {
-        "description": "Sailing"
-      },
-      "flower_group": {
-        "description": "Flower"
-      },
-      "coffee_group": {
-        "description": "Coffee"
+  "manifest_version": 3,
+  "name": "Tabless",
+  "version": "1.9.5",
+  "permissions": [
+    "declarativeNetRequest",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "chrome_url_overrides": {
+    "newtab": "./custom_page/custom_page.html"
+  },
+  "chrome_settings_overrides": {
+    "homepage": "./custom_page/custom_page.html"
+  },
+  "icons": {
+    "16": "icon.svg",
+    "48": "icon.svg",
+    "128": "icon.svg"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "hall_of_iFrame@uxer",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
       }
-    },
-    "action": { 
     }
+  },
+  "commands": {
+    "_execute_action": {},
+    "star_group": {
+      "description": "Star"
+    },
+    "sailing_group": {
+      "description": "Sailing"
+    },
+    "flower_group": {
+      "description": "Flower"
+    },
+    "coffee_group": {
+      "description": "Coffee"
+    }
+  },
+  "action": {}
 }
