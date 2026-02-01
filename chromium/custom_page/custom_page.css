@@ -203,10 +203,27 @@ body.light-mode #controls > button #Layer_1 {
     stroke: rgb(220 38 38 / var(--un-text-opacity));
 }
 
+body.light-mode input[type="text"] {
+  border-style: solid;
+  border-color: #feb6b5;
+  outline: none;
+}
+body.light-mode input[type="text"]:focus-visible {
+  outline: #D7716E auto 1px;
+}
 
 
 
 
+body.dark-mode input[type="text"] {
+  border-style: solid;
+  border-color: #cecece;
+  background-color: #cecece;
+  outline: none;
+}
+body.dark-mode input[type="text"]:focus-visible {
+  outline: #D7716E auto 1px;
+}
 
 body.dark-mode .iframe-title-bar > span{
     color: #D4D4D4;
